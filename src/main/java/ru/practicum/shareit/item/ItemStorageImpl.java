@@ -32,8 +32,8 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Item update(Long userId, Long itemId, Item item) {
-        getById(userId, itemId);
         Item storedItem = findItemById(userId, itemId);
+        getById(userId, itemId);
 
         if (item.getName() != null) {
             storedItem.setName(item.getName());
@@ -55,13 +55,11 @@ public class ItemStorageImpl implements ItemStorage {
     public ItemDto getById(Long userId, Long itemId) throws NotFoundException {
         Item item = null;
 
-        if (items.get(userId) == null) {
-            throw new NotFoundException("Пользователь с id=" + userId + " не существует");
-        }
-
-        for (Item element : items.get(userId)) {
-            if (element.getId() == itemId) {
-                item = element;
+        for (List<Item> list : items.values()) {
+            for (Item element : list) {
+                if (element.getId() == itemId) {
+                    item = element;
+                }
             }
         }
 
@@ -108,6 +106,10 @@ public class ItemStorageImpl implements ItemStorage {
     private Item findItemById(Long userId, Long itemId) {
         List<Item> itemList = items.get(userId);
         Item item = null;
+
+        if (itemList == null) {
+            throw new NotFoundException("Пользователя с id=" + userId + " не существует");
+        }
 
         for (Item element : itemList) {
             if (element.getId() == itemId) {
