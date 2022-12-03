@@ -1,8 +1,7 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -14,6 +13,6 @@ public class UserDto {
     @NotBlank
     private String name;
     @Email
-    @UniqueElements
+    @NotBlank
     private String email;
 }
