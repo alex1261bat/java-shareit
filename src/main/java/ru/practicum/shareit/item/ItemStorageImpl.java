@@ -19,7 +19,7 @@ public class ItemStorageImpl implements ItemStorage {
     public Item add(Long userId, Item item) {
         item.setId(getId());
         items.compute(userId, (ownerId, userItems) -> {
-            if(userItems == null) {
+            if (userItems == null) {
                 userItems = new ArrayList<>();
             }
             userItems.add(item);
