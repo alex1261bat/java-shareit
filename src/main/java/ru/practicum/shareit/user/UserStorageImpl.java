@@ -57,7 +57,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public List<User> getAll() {
-        return new ArrayList<>(users.values()) ;
+        return new ArrayList<>(users.values());
     }
 
     @Override
