@@ -6,13 +6,12 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 @Setter
 public class ItemStorageImpl implements ItemStorage {
-    private final Map<Long, List<Item>> items = new HashMap<>();
+    private final Map<Long, Map<Long, Item>> items = new HashMap<>();
     private long itemId = 0;
 
     @Override
@@ -20,9 +19,9 @@ public class ItemStorageImpl implements ItemStorage {
         item.setId(getId());
         items.compute(userId, (ownerId, userItems) -> {
             if (userItems == null) {
-                userItems = new ArrayList<>();
+                userItems = new HashMap<>();
             }
-            userItems.add(item);
+            userItems.put(itemId, item);
             return userItems;
         });
 
@@ -32,8 +31,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Item update(Long userId, Long itemId, Item item) {
-        Item storedItem = findItemById(userId, itemId);
-        getById(userId, itemId);
+        Item storedItem = getItemByUserId(userId, itemId);
 
         if (item.getName() != null) {
             storedItem.setName(item.getName());
@@ -52,45 +50,40 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public ItemDto getById(Long userId, Long itemId) throws NotFoundException {
+    public Item getById(Long userId, Long itemId) throws NotFoundException {
         Item item = null;
 
-        for (List<Item> list : items.values()) {
-            for (Item element : list) {
-                if (element.getId() == itemId) {
-                    item = element;
-                }
-            }
+        for (Map<Long, Item> itemMap : items.values()) {
+            item = itemMap.get(itemId);
         }
 
         if (item == null) {
             throw new NotFoundException("Вещь с id=" + itemId + " не существует");
         }
 
-        return ItemMapper.toItemDto(item);
+        return item;
     }
 
     @Override
-    public List<ItemDto> getUserItems(Long userId) {
-        List<Item> userItems = items.getOrDefault(userId, Collections.emptyList());
-
-        return userItems.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    public List<Item> getUserItems(Long userId) {
+        return new ArrayList<>(items.get(userId).values());
     }
 
     @Override
-    public List<ItemDto> searchAvailableItems(Long userId, String text) {
+    public List<Item> searchAvailableItems(Long userId, String text) {
         if (text.isBlank()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
-        List<ItemDto> availableItems = new ArrayList<>();
+        List<Item> availableItems = new ArrayList<>();
+        String editedText = text.toLowerCase();
 
-        for (List<Item> itemList : items.values()) {
-            for (Item item : itemList) {
-                if ((item.getName().toLowerCase().contains(text.toLowerCase())
-                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
+        for (Map<Long, Item> itemList : items.values()) {
+            for (Item item : itemList.values()) {
+                if ((item.getName().toLowerCase().contains(editedText)
+                        || item.getDescription().toLowerCase().contains(editedText))
                         && item.getAvailable()) {
-                    availableItems.add(ItemMapper.toItemDto(item));
+                    availableItems.add(item);
                 }
             }
         }
@@ -103,19 +96,13 @@ public class ItemStorageImpl implements ItemStorage {
         return itemId;
     }
 
-    private Item findItemById(Long userId, Long itemId) {
-        List<Item> itemList = items.get(userId);
-        Item item = null;
+    private Item getItemByUserId(Long userId, Long itemId) {
+        Map<Long, Item> itemMap = items.get(userId);
 
-        if (itemList == null) {
-            throw new NotFoundException("Пользователя с id=" + userId + " не существует");
+        if (itemMap == null || !itemMap.containsKey(itemId)) {
+            throw new NotFoundException("Вещь с id=" + itemId + " не принадлежит пользователю с id=" + userId);
         }
 
-        for (Item element : itemList) {
-            if (element.getId() == itemId) {
-                item = element;
-            }
-        }
-        return item;
+        return itemMap.get(itemId);
     }
 }

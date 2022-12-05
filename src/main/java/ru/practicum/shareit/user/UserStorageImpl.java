@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -47,22 +47,22 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public UserDto getById(Long id) throws NotFoundException {
+    public User getById(Long id) throws NotFoundException {
         if (users.get(id) == null) {
             throw new NotFoundException("Пользователь с id=" + id + " не существует");
         } else {
-            return UserMapper.toUserDto(users.get(id));
+            return users.get(id);
         }
     }
 
     @Override
-    public List<UserDto> getAll() {
-        return users.values().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+    public List<User> getAll() {
+        return new ArrayList<>(users.values()) ;
     }
 
     @Override
     public void delete(Long id) {
-        UserDto user = getById(id);
+        User user = getById(id);
         users.remove(id);
         log.trace("Удален объект: {}.", user);
     }

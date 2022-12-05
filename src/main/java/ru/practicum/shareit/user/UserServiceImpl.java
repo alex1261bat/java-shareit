@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -12,20 +13,20 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
-    public User add(User user) {
-        return userStorage.add(user);
+    public UserDto add(UserDto userDto) {
+        return UserMapper.toUserDto(userStorage.add(UserMapper.toUser(userDto)));
     }
 
-    public User update(Long id, User user) {
-        return userStorage.update(id, user);
+    public UserDto update(Long id, UserDto userDto) {
+        return UserMapper.toUserDto(userStorage.update(id, UserMapper.toUser(userDto)));
     }
 
     public UserDto getById(Long id) {
-        return userStorage.getById(id);
+        return UserMapper.toUserDto(userStorage.getById(id));
     }
 
     public List<UserDto> getAll() {
-        return userStorage.getAll();
+        return userStorage.getAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     public void delete(Long id) {

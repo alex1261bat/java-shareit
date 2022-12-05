@@ -9,9 +9,9 @@ public interface UserStorage {
 
     User update(Long id, User user);
 
-    UserDto getById(Long id) throws NotFoundException;
+    User getById(Long id) throws NotFoundException;
 
-    List<UserDto> getAll();
+    List<User> getAll();
 
     void delete(Long id);
 }
