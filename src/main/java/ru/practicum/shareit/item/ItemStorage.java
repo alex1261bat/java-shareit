@@ -1,17 +1,17 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.exceptions.NotFoundException;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ItemStorage {
-    Item add(Long userId, Item item);
+public interface ItemStorage extends JpaRepository<Item, Long> {
+    @Query(" select i from Item i " +
+            "where i.owner.id =  ?1")
+    List<Item> findUserItems(long userId);
 
-    Item update(Long userId, Long itemId, Item item);
-
-    Item getById(Long userId, Long itemId) throws NotFoundException;
-
-    List<Item> getUserItems(Long userId);
-
-    List<Item> searchAvailableItems(Long userId, String text);
+    @Query(" select i from Item i " +
+            "where (upper(i.name) like upper(concat('%', ?1, '%')) " +
+            " or upper(i.description) like upper(concat('%', ?1, '%'))) and i.available = true")
+    List<Item> findAvailableItems(String text);
 }
