@@ -23,11 +23,10 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(BookingValidationException.class)
-    public ResponseEntity<String> handleBookingValidationException(BookingValidationException exception) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBookingValidationException(BookingValidationException exception) {
         log.error(exception.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(exception.getMessage());
+        return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})

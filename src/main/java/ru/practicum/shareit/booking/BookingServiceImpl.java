@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.BookingValidationException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemStorage;
 import ru.practicum.shareit.user.User;
@@ -154,7 +153,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             return State.valueOf(state);
         } catch (IllegalArgumentException e) {
-            throw new ValidationException("Unknown state: " + state);
+            throw new BookingValidationException("Unknown state: " + state);
         }
     }
 }
