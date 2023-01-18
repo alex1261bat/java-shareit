@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ItemStorage extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query(" select i from Item i " +
             "where i.owner.id =  ?1")
     List<Item> findUserItems(long userId);

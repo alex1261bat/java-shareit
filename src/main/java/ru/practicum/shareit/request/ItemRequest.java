@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request;
 
 import lombok.*;
+import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,8 +20,9 @@ public class ItemRequest {
     private Long id;
     @Column(name = "description", nullable = false)
     private String description;
-    @Column(name = "requestor_id", nullable = false)
-    private long requestor;
+    @ManyToOne
+    @JoinColumn(name = "requestor_id", referencedColumnName = "id")
+    private User requestor;
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 }

@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking;
 
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserMapper;
 
 public class BookingMapper {
     public static BookingResponseDto toBookingResponseDto(Booking booking) {
@@ -9,9 +11,9 @@ public class BookingMapper {
                 booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
-                booking.getItem(),
+                ItemMapper.toItemDto(booking.getItem()),
                 booking.getStatus(),
-                booking.getBooker()
+                UserMapper.toUserDto(booking.getBooker())
         );
     }
 

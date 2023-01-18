@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     public UserDto saveNewUser(UserDto userDto) {
-        return UserMapper.toUserDto(userStorage.save(UserMapper.toUser(userDto)));
+        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
     public UserDto update(Long id, UserDto userDto) {
@@ -30,26 +30,26 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userDto.getEmail());
         }
 
-        userStorage.save(user);
+        userRepository.save(user);
 
         return UserMapper.toUserDto(user);
     }
 
     public UserDto getById(Long id) {
-        return UserMapper.toUserDto(userStorage.findById(id)
+        return UserMapper.toUserDto(userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователя с id=" + id + " не существует")));
     }
 
     public List<UserDto> getAll() {
-        return userStorage.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     public void delete(Long id) {
-        userStorage.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     private void validateUserEmail(User user) {
-        List<User> userList = userStorage.findAll().stream()
+        List<User> userList = userRepository.findAll().stream()
                 .filter(userInList -> userInList.getEmail().equals(user.getEmail())).collect(Collectors.toList());
         if (userList.size() > 0) {
             throw new ValidationException("email уже занят");
