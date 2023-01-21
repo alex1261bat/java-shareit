@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto update(Long id, UserDto userDto) {
-        User user = UserMapper.toUser(getById(id));
+        User user = userRepository.getUserById(id);
 
         validateUserEmail(UserMapper.toUser(userDto));
 
@@ -36,8 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto getById(Long id) {
-        return UserMapper.toUserDto(userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователя с id=" + id + " не существует")));
+        return UserMapper.toUserDto(userRepository.getUserById(id));
     }
 
     public List<UserDto> getAll() {

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.util.List;
@@ -14,18 +15,18 @@ public class ItemMapper {
                 item.getDescription(),
                 item.getAvailable(),
                 item.getOwner().getId(),
-                null
+                item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
 
-    public static Item toItem(ItemDto itemDto, User owner) {
+    public static Item toItem(ItemDto itemDto, User owner, ItemRequest itemRequest) {
         return new Item(
                 itemDto.getId(),
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
                 owner,
-                null
+                itemRequest
         );
     }
 

@@ -1,11 +1,14 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exceptions.BookingValidationException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -21,17 +24,26 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     public ItemDto saveNewItem(Long userId, ItemDto itemDto) {
-        User owner = getUserById(userId);
-        return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto, owner)));
+        User owner = userRepository.getUserById(userId);
+        ItemRequest itemRequest = null;
+
+        if (itemDto.getRequestId() != null) {
+            itemRequest = itemRequestRepository.getItemRequestById(itemDto.getRequestId());
+        }
+
+        Item item = ItemMapper.toItem(itemDto, owner, itemRequest);
+
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
     public ItemDto update(Long userId, Long itemId, ItemDto itemDto) {
-        getUserById(userId);
-        Item item = getItemById(itemId);
+        userRepository.getUserById(userId);
+        Item item = itemRepository.getItemById(itemId);
 
         if (!(item.getOwner().getId().equals(userId))) {
             throw  new NotFoundException("Вещь с id=" + itemId + " не принадлежит пользователю с id=" + userId);
@@ -51,29 +63,30 @@ public class ItemServiceImpl implements ItemService {
 
         itemRepository.save(item);
 
-        return ItemMapper.toItemDto(itemRepository.findById(itemId).get());
+        return ItemMapper.toItemDto(itemRepository.getItemById(itemId));
     }
 
     @Override
     public ItemWithBookingDatesDto getById(Long userId, Long itemId) {
-        Item item = getItemById(itemId);
+        Item item = itemRepository.getItemById(itemId);
+
         return convertToItemWithBookingDatesDto(item, userId);
     }
 
     @Override
-    public List<ItemWithBookingDatesDto> getUserItems(Long userId) {
-        return itemRepository.findUserItems(userId).stream()
+    public List<ItemWithBookingDatesDto> getUserItems(Long userId, Pageable pageRequest) {
+        return itemRepository.findAllByOwnerId(userId, pageRequest).stream()
                 .map(item -> convertToItemWithBookingDatesDto(item, userId)).collect(Collectors.toList());
     }
 
     @Override
-    public List<ItemDto> findAvailableItems(String text) {
+    public List<ItemDto> findAvailableItems(String text, Pageable pageRequest) {
 
         if (text.isBlank()) {
             return new ArrayList<>();
         }
 
-        return itemRepository.findAvailableItems(text).stream()
+        return itemRepository.findAvailableItems(text, pageRequest).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -84,8 +97,8 @@ public class ItemServiceImpl implements ItemService {
         commentRequestDto.setItemId(itemId);
         commentRequestDto.setAuthorId(userId);
 
-        User author = getUserById(userId);
-        Item item = getItemById(itemId);
+        User author = userRepository.getUserById(userId);
+        Item item = itemRepository.getItemById(itemId);
         List<Booking> bookingList = bookingRepository.findAllUserBookings(commentRequestDto.getAuthorId(),
                 commentRequestDto.getItemId(), commentRequestDto.getCreated());
 
@@ -94,6 +107,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Comment comment = commentRepository.save(CommentMapper.toComment(commentRequestDto, item, author));
+
         return CommentMapper.toCommentResponseDto(comment);
     }
 
@@ -120,17 +134,6 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
         }
-
         return ItemMapper.toItemDtoWithBookingDates(item, current, next, commentList);
-    }
-
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с id=" + userId + " не существует"));
-    }
-
-    private Item getItemById(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Вещь с id=" + itemId + " не существует"));
     }
 }

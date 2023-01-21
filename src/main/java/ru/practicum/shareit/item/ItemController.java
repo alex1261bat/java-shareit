@@ -1,9 +1,11 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
@@ -32,13 +34,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemWithBookingDatesDto> getAllUserItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getUserItems(userId);
+    public List<ItemWithBookingDatesDto> getAllUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                         @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                         @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        return itemService.getUserItems(userId, validatePage(from, size));
     }
 
     @GetMapping("/search")
-    public List<ItemDto> findAvailableItems(@RequestParam String text) {
-        return itemService.findAvailableItems(text);
+    public List<ItemDto> findAvailableItems(@RequestParam String text,
+                                            @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                            @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        return itemService.findAvailableItems(text, validatePage(from, size));
     }
 
     @PostMapping(value = "/{itemId}/comment")
@@ -46,5 +52,14 @@ public class ItemController {
                                          @PathVariable Long itemId,
                                          @Valid @RequestBody CommentRequestDto commentRequestDto) {
         return itemService.addComment(userId, itemId, commentRequestDto);
+    }
+
+    private PageRequest validatePage(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new ValidationException("Параметры page нарушены: from=" + from + " size=" + size);
+        } else {
+            int page = from / size;
+            return PageRequest.of(page, size);
+        }
     }
 }
