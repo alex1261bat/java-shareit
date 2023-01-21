@@ -190,9 +190,10 @@ class ItemServiceImplTest {
         when(userRepository.getUserById(any()))
                 .thenThrow(new NotFoundException("Пользователь с id=" + itemDto.getOwner() + " не существует"));
         NotFoundException e = assertThrows(NotFoundException.class, () ->
-                itemService.update( 2L, 1L, itemDto));
+                itemService.update(2L, 1L, itemDto));
         assertEquals("Пользователь с id=" + itemDto.getOwner() + " не существует", e.getMessage());
     }
+
     @Test
     void updateWrongItemTest() {
         User user = new User(1L, "name1", "email1@mail");
@@ -220,7 +221,7 @@ class ItemServiceImplTest {
                 .thenReturn(ItemMapper.toItem(itemDto, user, null));
 
         NotFoundException e = assertThrows(NotFoundException.class, () ->
-                itemService.update( 2L, 1L, itemDto));
+                itemService.update(2L, 1L, itemDto));
         assertEquals("Вещь с id=" + 1L + " не принадлежит пользователю с id="
                 + user2.getId(), e.getMessage());
     }

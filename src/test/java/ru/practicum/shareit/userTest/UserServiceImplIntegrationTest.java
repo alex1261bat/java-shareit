@@ -30,8 +30,8 @@ class UserServiceImplIntegrationTest {
         UserDto userDto = makeUserDto();
         userService.saveNewUser(userDto);
 
-        TypedQuery<User> query = entityManager.
-                createQuery("Select u from User u where u.email = :email", User.class);
+        TypedQuery<User> query = entityManager
+                .createQuery("Select u from User u where u.email = :email", User.class);
         User user = query.setParameter("email", userDto.getEmail()).getSingleResult();
 
         assertThat(user.getId(), notNullValue());
