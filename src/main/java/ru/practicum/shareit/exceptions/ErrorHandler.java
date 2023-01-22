@@ -14,18 +14,12 @@ import javax.validation.ConstraintViolationException;
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler(BookingValidationException.class)
+    @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class,
+            ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBookingValidationException(BookingValidationException exception) {
-        log.error(exception.getMessage());
-        return new ErrorResponse(exception.getMessage());
-    }
-
-    @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleAnnotationValidationException(final RuntimeException runtimeException) {
+    public ErrorResponse handleAnnotationValidationException(final RuntimeException runtimeException) {
         log.error(runtimeException.getMessage());
-        return runtimeException.getMessage();
+        return new ErrorResponse(runtimeException.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -33,14 +27,6 @@ public class ErrorHandler {
         log.error(exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(exception.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Throwable exception) {
-        log.error(exception.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(exception.getMessage());
     }
 }

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.*;
-import ru.practicum.shareit.exceptions.BookingValidationException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
@@ -285,7 +285,7 @@ class BookingServiceImplTest {
         when(userRepository.getUserById(any())).thenReturn(user2);
         when(itemRepository.getItemById(any())).thenReturn(item);
 
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 bookingService.saveNewBooking(2L, booking));
         assertEquals("Вещь недоступна для бронирования", e.getMessage());
     }
@@ -302,7 +302,7 @@ class BookingServiceImplTest {
         when(userRepository.getUserById(any())).thenReturn(user2);
         when(itemRepository.getItemById(any())).thenReturn(item);
 
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 bookingService.saveNewBooking(2L, booking));
         assertEquals("Время начала бронирования не может быть позже времени окончания", e.getMessage());
     }
@@ -335,7 +335,7 @@ class BookingServiceImplTest {
         when(bookingRepository.getBookingById(any())).thenReturn(BookingMapper.toBooking(booking, user2, item,
                 Status.APPROVED));
 
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 bookingService.approveBooking(2L, booking.getId(), true));
         assertEquals("Статус менять не надо", e.getMessage());
     }
@@ -406,7 +406,7 @@ class BookingServiceImplTest {
     void getBookingListWrongStateTest() {
         User user = new User(1L, "name1", "email1@mail");
 
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 bookingService.getAllUserBookings(user.getId(), "WRONGSTATE", Pageable.unpaged()));
         assertEquals("Unknown state: WRONGSTATE", e.getMessage());
     }
@@ -415,7 +415,7 @@ class BookingServiceImplTest {
     void getOwnerBookingListWrongStateTest() {
         User user = new User(1L, "name1", "email1@mail");
 
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 bookingService.getAllUserItemsBookings(user.getId(), "WRONGSTATE", Pageable.unpaged()));
         assertEquals("Unknown state: WRONGSTATE", e.getMessage());
     }

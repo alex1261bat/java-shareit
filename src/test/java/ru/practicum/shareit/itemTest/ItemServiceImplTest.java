@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
-import ru.practicum.shareit.exceptions.BookingValidationException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.*;
 import ru.practicum.shareit.request.ItemRequestRepository;
@@ -242,7 +242,7 @@ class ItemServiceImplTest {
                 LocalDateTime.now());
 
         when(userRepository.findById(any())).thenReturn(Optional.empty());
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 itemService.addComment(3L, 2L, commentDto));
         assertEquals("Пользователь с id=3 не брал вещи в аренду", e.getMessage());
     }
@@ -257,7 +257,7 @@ class ItemServiceImplTest {
 
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
         when(itemRepository.findById(any())).thenReturn(Optional.empty());
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 itemService.addComment(user.getId(), 3L, commentDto));
         assertEquals("Пользователь с id=" + user.getId() + " не брал вещи в аренду", e.getMessage());
     }
@@ -274,7 +274,7 @@ class ItemServiceImplTest {
         when(itemRepository.findById(any())).thenReturn(Optional.of(item));
         when(bookingRepository.findAllUserBookings(anyLong(), anyLong(), any())).thenReturn(new ArrayList<>());
 
-        BookingValidationException e = assertThrows(BookingValidationException.class, () ->
+        ValidationException e = assertThrows(ValidationException.class, () ->
                 itemService.addComment(3L, 1L, commentDto));
         assertEquals("Пользователь с id=" + 3L + " не брал вещи в аренду", e.getMessage());
     }

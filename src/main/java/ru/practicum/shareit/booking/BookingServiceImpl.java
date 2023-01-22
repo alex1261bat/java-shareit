@@ -3,7 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.BookingValidationException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
@@ -31,11 +31,11 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (!item.getAvailable()) {
-            throw new BookingValidationException("Вещь недоступна для бронирования");
+            throw new ValidationException("Вещь недоступна для бронирования");
         }
 
         if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
-            throw new BookingValidationException("Время начала бронирования не может быть позже времени окончания");
+            throw new ValidationException("Время начала бронирования не может быть позже времени окончания");
         }
 
         Booking booking = BookingMapper.toBooking(bookingRequestDto, booker, item, Status.WAITING);
@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
 
         if ((booking.getStatus() == Status.APPROVED && approved) ||
                 (booking.getStatus() == Status.REJECTED && !approved)) {
-            throw new BookingValidationException("Статус менять не надо");
+            throw new ValidationException("Статус менять не надо");
         }
 
         if (userId.equals(bookerId)) {
@@ -151,7 +151,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             return State.valueOf(state);
         } catch (IllegalArgumentException e) {
-            throw new BookingValidationException("Unknown state: " + state);
+            throw new ValidationException("Unknown state: " + state);
         }
     }
 }

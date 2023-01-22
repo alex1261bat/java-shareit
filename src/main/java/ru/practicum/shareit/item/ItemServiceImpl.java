@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.exceptions.BookingValidationException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestRepository;
@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
                 commentRequestDto.getItemId(), commentRequestDto.getCreated());
 
         if (bookingList.isEmpty()) {
-            throw new BookingValidationException("Пользователь с id=" + userId + " не брал вещи в аренду");
+            throw new ValidationException("Пользователь с id=" + userId + " не брал вещи в аренду");
         }
 
         Comment comment = commentRepository.save(CommentMapper.toComment(commentRequestDto, item, author));
