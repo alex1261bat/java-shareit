@@ -19,7 +19,7 @@ import ru.practicum.shareit.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class BookingRepositoryTest {
@@ -195,4 +195,14 @@ class BookingRepositoryTest {
         assertEquals(booking2.getStatus(), bookingList.get(0).getStatus());
     }
 
+    @Test
+    void getBookingByIdTest() {
+        final Booking booking = bookingRepository.getBookingById(booking1.getId());
+        assertEquals(booking1.getId(), booking.getId());
+        assertEquals(booking1.getStart(), booking.getStart());
+        assertEquals(booking1.getEnd(), booking.getEnd());
+        assertEquals(booking1.getBooker(), booking.getBooker());
+        assertEquals(booking1.getItem(), booking.getItem());
+        assertEquals(booking1.getStatus(), booking.getStatus());
+    }
 }

@@ -34,6 +34,7 @@ class UserServiceImplTest {
         User user = new User(1L, "name1", "email1@mail");
         User user1 = new User(2L, "name1", "email1@mail");
         List<User> userList = List.of(user, user1);
+
         when(userRepository.findAll()).thenReturn(userList);
 
         List<UserDto> userDtoList = userService.getAll();
@@ -47,6 +48,7 @@ class UserServiceImplTest {
     @Test
     void getByIdTest() {
         User user = new User(1L, "name1", "email1@mail");
+
         when(userRepository.getUserById(anyLong())).thenReturn(user);
 
         UserDto userDto = userService.getById(user.getId());
@@ -59,7 +61,9 @@ class UserServiceImplTest {
     @Test
     void saveNewUserTest() {
         UserDto userDto = new UserDto(1L, "name1", "email1@mail");
+
         when(userRepository.save(any())).thenReturn(UserMapper.toUser(userDto));
+
         UserDto newUserDto = userService.saveNewUser(userDto);
 
         assertEquals(userDto.getId(), newUserDto.getId());
@@ -67,7 +71,7 @@ class UserServiceImplTest {
         assertEquals(userDto.getEmail(), newUserDto.getEmail());
     }
 
-    @Test
+   @Test
     void updateTest() {
         UserDto userDto = new UserDto(1L, "UpdatedName1", "email1@mail");
         User user = new User(1L, "name1", "email1@mail");

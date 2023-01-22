@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.ValidationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,8 +17,6 @@ public class UserServiceImpl implements UserService {
 
     public UserDto update(Long id, UserDto userDto) {
         User user = userRepository.getUserById(id);
-
-        validateUserEmail(UserMapper.toUser(userDto));
 
         if (userDto.getName() != null) {
             user.setName(userDto.getName());
@@ -44,13 +41,5 @@ public class UserServiceImpl implements UserService {
 
     public void delete(Long id) {
         userRepository.deleteById(id);
-    }
-
-    private void validateUserEmail(User user) {
-        List<User> userList = userRepository.findAll().stream()
-                .filter(userInList -> userInList.getEmail().equals(user.getEmail())).collect(Collectors.toList());
-        if (userList.size() > 0) {
-            throw new ValidationException("email уже занят");
-        }
     }
 }

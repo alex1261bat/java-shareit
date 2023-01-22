@@ -109,11 +109,11 @@ class ItemRepositoryTest {
 
     @Test
     void getItemById() {
-        final Optional<Item> item = itemRepository.findById(item1.getId());
-        assertEquals(item1.getId(), item.get().getId());
-        assertEquals(item1.getDescription(), item.get().getDescription());
-        assertEquals(item1.getAvailable(), item.get().getAvailable());
-        assertEquals(item1.getOwner(), item.get().getOwner());
-        assertEquals(item1.getRequest(), item.get().getRequest());
+        final Item item = itemRepository.getItemById(item1.getId());
+        assertEquals(item1.getId(), item.getId());
+        assertEquals(item1.getDescription(), item.getDescription());
+        assertEquals(item1.getAvailable(), item.getAvailable());
+        assertEquals(item1.getOwner(), item.getOwner());
+        assertEquals(item1.getRequest(), item.getRequest());
     }
 }

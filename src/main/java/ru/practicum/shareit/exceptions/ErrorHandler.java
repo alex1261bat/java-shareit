@@ -14,14 +14,6 @@ import javax.validation.ConstraintViolationException;
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<String> handleValidationException(ValidationException exception) {
-        log.error(exception.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(exception.getMessage());
-    }
-
     @ExceptionHandler(BookingValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBookingValidationException(BookingValidationException exception) {
@@ -32,6 +24,7 @@ public class ErrorHandler {
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleAnnotationValidationException(final RuntimeException runtimeException) {
+        log.error(runtimeException.getMessage());
         return runtimeException.getMessage();
     }
 

@@ -13,9 +13,8 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class ItemRequestRepositoryTest {
@@ -74,9 +73,9 @@ class ItemRequestRepositoryTest {
 
     @Test
     void getItemRequestByIdTest() {
-        final Optional<ItemRequest> itemRequest = itemRequestRepository.findById(itemRequest1.getId());
-        assertEquals(itemRequest1.getId(), itemRequest.get().getId());
-        assertEquals(itemRequest1.getDescription(), itemRequest.get().getDescription());
-        assertEquals(itemRequest1.getRequestor(), itemRequest.get().getRequestor());
+        final ItemRequest itemRequest = itemRequestRepository.getItemRequestById(itemRequest1.getId());
+        assertEquals(itemRequest1.getId(), itemRequest.getId());
+        assertEquals(itemRequest1.getDescription(), itemRequest.getDescription());
+        assertEquals(itemRequest1.getRequestor(), itemRequest.getRequestor());
     }
 }
