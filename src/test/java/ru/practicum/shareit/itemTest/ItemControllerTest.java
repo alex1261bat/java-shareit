@@ -1,6 +1,7 @@
 package ru.practicum.shareit.itemTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,6 +15,7 @@ import ru.practicum.shareit.item.CommentResponseDto;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemWithBookingDatesDto;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.pageValidator.PageValidator;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -22,20 +24,19 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc
-public class ItemControllerTest {
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+class ItemControllerTest {
     @MockBean
-    ItemService itemService;
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper mapper;
+    private final ItemService itemService;
+    private final MockMvc mockMvc;
+    private final ObjectMapper mapper;
     private final ItemDto itemDto = new ItemDto(1L, "item", "description", true,
             1L, null);
     private final ItemWithBookingDatesDto itemDtoWithBookingDates = new ItemWithBookingDatesDto(1L, "item",
@@ -56,6 +57,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class));
+        verify(itemService, times(1)).saveNewItem(1L, itemDto);
     }
 
     @Test
@@ -73,6 +75,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class));
+        verify(itemService, times(1)).update(1L, itemDto.getId(), itemDto);
     }
 
     @Test
@@ -90,6 +93,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class));
+        verify(itemService, times(1)).getById(1L, itemDto.getId());
     }
 
     @Test
@@ -109,6 +113,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description", is(itemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class));
+        verify(itemService, times(1))
+                .getUserItems(1L, PageValidator.validatePage(0, 5));
     }
 
     @Test
@@ -129,6 +135,8 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description", is(itemDto.getDescription()), String.class))
                 .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable()), Boolean.class))
                 .andExpect(jsonPath("$[0].id", is(itemDto.getId()), Long.class));
+        verify(itemService, times(1))
+                .findAvailableItems("cook", PageValidator.validatePage(0, 5));
     }
 
     @Test
@@ -153,5 +161,6 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.created", is(commentResponseDto.getCreated().format(DateTimeFormatter
                         .ofPattern("yyyy-MM-dd HH:mm:ss")))))
                 .andExpect(jsonPath("$.id", is(commentResponseDto.getId()), Long.class));
+        verify(itemService, times(1)).addComment(1L, 1L, commentRequestDto);
     }
 }

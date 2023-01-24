@@ -1,5 +1,6 @@
 package ru.practicum.shareit.userTest;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -9,9 +10,9 @@ import ru.practicum.shareit.user.UserRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserRepositoryTest {
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Test
     void getUserByIdTest() {

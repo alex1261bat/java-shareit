@@ -3,6 +3,8 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
@@ -61,13 +63,24 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private List<ItemRequestWithItemDtoListResponseDto> convertItemRequestListToDtoList(
             List<ItemRequest> itemRequestList) {
         List<ItemRequestWithItemDtoListResponseDto> responseDtoList = new ArrayList<>();
+        List<Item> items = itemRepository.findAllByRequestIsIn(itemRequestList);
+        List<ItemDto> itemDtoList = convertItemListToItemDtoList(items);
 
         for (ItemRequest request : itemRequestList) {
             responseDtoList.add(ItemRequestMapper.toItemRequestWithItemDtoListResponseDto(request,
-                    itemRepository.findAllByRequestId(request.getId()).stream()
-                            .map(ItemMapper::toItemDto)
+                    itemDtoList.stream()
+                            .filter(itemDto -> itemDto.getRequestId().equals(request.getId()))
                             .collect(Collectors.toList())));
         }
         return responseDtoList;
+    }
+
+    private List<ItemDto> convertItemListToItemDtoList(List<Item> items) {
+        List<ItemDto> itemDtoList = new ArrayList<>();
+
+        for (Item item : items) {
+            itemDtoList.add(ItemMapper.toItemDto(item));
+        }
+        return itemDtoList;
     }
 }

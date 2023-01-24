@@ -26,12 +26,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ItemServiceImplTest {
-    ItemService itemService;
-    ItemRepository itemRepository;
-    UserRepository userRepository;
-    BookingRepository bookingRepository;
-    CommentRepository commentRepository;
-    ItemRequestRepository itemRequestRepository;
+    private ItemService itemService;
+    private ItemRepository itemRepository;
+    private UserRepository userRepository;
+    private BookingRepository bookingRepository;
+    private CommentRepository commentRepository;
 
     @BeforeEach
     void init() {
@@ -39,7 +38,7 @@ class ItemServiceImplTest {
         userRepository = mock(UserRepository.class);
         bookingRepository = mock(BookingRepository.class);
         commentRepository = mock(CommentRepository.class);
-        itemRequestRepository = mock(ItemRequestRepository.class);
+        ItemRequestRepository itemRequestRepository = mock(ItemRequestRepository.class);
         itemService = new ItemServiceImpl(itemRepository, userRepository, bookingRepository, commentRepository,
                 itemRequestRepository);
     }

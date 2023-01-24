@@ -1,5 +1,6 @@
 package ru.practicum.shareit.bookingTest;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -17,9 +18,9 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
-class BookingResponseDtoTest {
-    @Autowired
-    private JacksonTester<BookingResponseDto> json;
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+public class BookingResponseDtoTest {
+    private final JacksonTester<BookingResponseDto> json;
 
     @Test
     void testBookingDto() throws Exception {

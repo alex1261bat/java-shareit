@@ -15,8 +15,8 @@ import static org.mockito.Mockito.when;
 
 class UserServiceImplTest {
 
-    UserService userService;
-    UserRepository userRepository;
+    private UserService userService;
+    private UserRepository userRepository;
 
     @BeforeEach
     void init() {

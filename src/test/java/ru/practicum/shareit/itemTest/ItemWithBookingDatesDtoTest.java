@@ -1,5 +1,6 @@
 package ru.practicum.shareit.itemTest;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -13,9 +14,9 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @JsonTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemWithBookingDatesDtoTest {
-    @Autowired
-    private JacksonTester<ru.practicum.shareit.item.ItemWithBookingDatesDto> json;
+    private final JacksonTester<ru.practicum.shareit.item.ItemWithBookingDatesDto> json;
 
     @Test
     void testItemDto() throws Exception {

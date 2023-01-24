@@ -52,7 +52,7 @@ class BookingServiceImplIntegrationTest {
         assertThat(booking.getBooker(), equalTo(booker));
     }
 
-    private BookingRequestDto makeBookingDto(LocalDateTime start, LocalDateTime end, Long itemId) {
+   private BookingRequestDto makeBookingDto(LocalDateTime start, LocalDateTime end, Long itemId) {
         BookingRequestDto dto = new BookingRequestDto();
         dto.setStart(start);
         dto.setEnd(end);

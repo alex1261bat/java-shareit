@@ -1,6 +1,7 @@
 package ru.practicum.shareit.userTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,21 +20,19 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserControllerTest {
     @MockBean
-    UserService userService;
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper mapper;
+    private final UserService userService;
+    private final MockMvc mockMvc;
+    private final ObjectMapper mapper;
     private final UserDto userDto = new UserDto(1L, "name", "email@mail");
 
     @Test
@@ -50,6 +49,7 @@ class UserControllerTest {
                         .andExpect(jsonPath("$.name", is(userDto.getName()), String.class))
                         .andExpect(jsonPath("$.email", is(userDto.getEmail()), String.class))
                         .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class));
+        verify(userService, times(1)).saveNewUser(userDto);
     }
 
     @Test
@@ -66,6 +66,7 @@ class UserControllerTest {
                         .andExpect(jsonPath("$.name", is(userDto.getName()), String.class))
                         .andExpect(jsonPath("$.email", is(userDto.getEmail()), String.class))
                         .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class));
+        verify(userService, times(1)).update(1L, userDto);
     }
 
     @Test
@@ -81,6 +82,7 @@ class UserControllerTest {
                         .andExpect(jsonPath("$.name", is(userDto.getName()), String.class))
                         .andExpect(jsonPath("$.email", is(userDto.getEmail()), String.class))
                         .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class));
+        verify(userService, times(1)).getById(1L);
     }
 
     @Test
@@ -98,6 +100,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$", hasSize(3)));
+        verify(userService, times(1)).getAll();
     }
 
     @Test
@@ -107,5 +110,6 @@ class UserControllerTest {
         mockMvc.perform(delete("/users/1")
                         .header("X-Sharer-User-Id", 1L))
                         .andExpect(status().isOk());
+        verify(userService, times(1)).delete(1L);
     }
 }

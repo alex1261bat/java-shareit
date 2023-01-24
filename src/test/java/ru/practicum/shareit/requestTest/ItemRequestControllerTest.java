@@ -1,6 +1,7 @@
 package ru.practicum.shareit.requestTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.pageValidator.PageValidator;
 import ru.practicum.shareit.request.*;
 import ru.practicum.shareit.user.User;
 
@@ -19,7 +21,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,15 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ItemRequestController.class)
 @AutoConfigureMockMvc
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemRequestControllerTest {
     @MockBean
-    ItemRequestService itemRequestService;
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    ObjectMapper mapper;
+    private final ItemRequestService itemRequestService;
+    private final MockMvc mockMvc;
+    private final ObjectMapper mapper;
 
-    User owner = new User(1L, "owner", "owner@mail");
+    private final User owner = new User(1L, "owner", "owner@mail");
     private final ItemRequest itemRequest = new ItemRequest(1L, "text", owner, LocalDateTime.now());
     private final ItemDto itemDto = new ItemDto(1L, "item", "description", true,
             owner.getId(), itemRequest.getRequestor().getId());
@@ -56,6 +57,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description", is(requestDto.getDescription()), String.class))
                 .andExpect(jsonPath("$.id", is(requestDto.getId()), Long.class));
+        verify(itemRequestService, times(1)).saveNewItemRequest(1L, requestDto);
     }
 
     @Test
@@ -68,8 +70,10 @@ class ItemRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].description", is(requestDtoResponse.getDescription()), String.class))
+                .andExpect(jsonPath("$[0].description",
+                        is(requestDtoResponse.getDescription()), String.class))
                 .andExpect(jsonPath("$[0].id", is(requestDtoResponse.getId()), Long.class));
+        verify(itemRequestService, times(1)).getAllByOwner(1L);
     }
 
     @Test
@@ -82,8 +86,11 @@ class ItemRequestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].description", is(requestDtoResponse.getDescription()), String.class))
+                .andExpect(jsonPath("$[0].description",
+                        is(requestDtoResponse.getDescription()), String.class))
                 .andExpect(jsonPath("$[0].id", is(requestDtoResponse.getId()), Long.class));
+        verify(itemRequestService, times(1)).getAll(1L,
+                PageValidator.validatePage(0, 10));
     }
 
     @Test
@@ -98,5 +105,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description", is(requestDtoResponse.getDescription()), String.class))
                 .andExpect(jsonPath("$.id", is(requestDtoResponse.getId()), Long.class));
+        verify(itemRequestService, times(1))
+                .getItemRequestById(1L, requestDtoResponse.getId());
     }
 }

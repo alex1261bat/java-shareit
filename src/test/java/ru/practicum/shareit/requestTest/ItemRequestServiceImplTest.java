@@ -20,10 +20,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ItemRequestServiceImplTest {
-    ItemRepository itemRepository;
-    UserRepository userRepository;
-    ItemRequestRepository itemRequestRepository;
-    ItemRequestServiceImpl itemRequestService;
+    private ItemRepository itemRepository;
+    private UserRepository userRepository;
+    private ItemRequestRepository itemRequestRepository;
+    private ItemRequestServiceImpl itemRequestService;
 
     @BeforeEach
     void init() {
@@ -54,12 +54,12 @@ class ItemRequestServiceImplTest {
         User owner = new User(1L, "owner", "owner@mail");
 
         ItemRequestDto request = new ItemRequestDto(1L, "text", LocalDateTime.now(),user.getId());
-        Item item = new Item(1L, "item", "description", true, owner, ItemRequestMapper
-                .toItemRequest(request, user));
+        Item item = new Item(1L, "item", "description", true, owner,
+                ItemRequestMapper.toItemRequest(request, user));
         when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(anyLong()))
                 .thenReturn(List.of(ItemRequestMapper.toItemRequest(request, user)));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of(item));
+        when(itemRepository.findAllByRequestIsIn(any())).thenReturn(List.of(item));
 
         List<ItemRequestWithItemDtoListResponseDto> requestList = itemRequestService.getAllByOwner(user.getId());
 
@@ -80,7 +80,7 @@ class ItemRequestServiceImplTest {
         when(itemRequestRepository.findAllByOtherUser(anyLong(), any())).thenReturn(List.of(ItemRequestMapper
                 .toItemRequest(request, user)));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(owner));
-        when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of(item));
+        when(itemRepository.findAllByRequestIsIn(any())).thenReturn(List.of(item));
 
         List<ItemRequestWithItemDtoListResponseDto> requestList = itemRequestService
                 .getAll(owner.getId(), Pageable.unpaged());

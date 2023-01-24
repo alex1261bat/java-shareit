@@ -1,11 +1,10 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.pageValidator.PageValidator;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
@@ -41,7 +40,7 @@ public class BookingController {
                                                                      defaultValue = "0") Integer from,
                                                        @RequestParam(name = "size",
                                                                      defaultValue = "10") Integer size) {
-        return bookingService.getAllUserBookings(userId, state, validatePage(from, size));
+        return bookingService.getAllUserBookings(userId, state, PageValidator.validatePage(from, size));
     }
 
     @GetMapping("/owner")
@@ -52,15 +51,6 @@ public class BookingController {
                                                                           defaultValue = "0") Integer from,
                                                             @RequestParam(name = "size",
                                                                           defaultValue = "10") Integer size) {
-        return bookingService.getAllUserItemsBookings(userId, state, validatePage(from, size));
-    }
-
-    private PageRequest validatePage(Integer from, Integer size) {
-        if (from < 0 || size < 1) {
-            throw new ValidationException("Параметры page нарушены: from=" + from + " size=" + size);
-        } else {
-            int page = from / size;
-            return PageRequest.of(page, size);
-        }
+        return bookingService.getAllUserItemsBookings(userId, state, PageValidator.validatePage(from, size));
     }
 }

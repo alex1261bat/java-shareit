@@ -1,5 +1,6 @@
 package ru.practicum.shareit.itemTest;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,33 +16,27 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemRepositoryTest {
-    @Autowired
-    ItemRepository itemRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ItemRequestRepository itemRequestRepository;
-    Item item1;
-    Item item2;
-    Item item3;
-    User user1;
-    User user2;
-    User user3;
-    ItemRequest request1;
-    ItemRequest request2;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
+    private Item item1;
+    private Item item2;
+    private Item item3;
+    private User user1;
+    private ItemRequest request2;
 
     @BeforeEach
     void init() {
         user1 = userRepository.save(new User(1L, "name1", "email1@mail"));
-        user2 = userRepository.save(new User(2L, "name2", "email2@mail"));
-        user3 = userRepository.save(new User(3L, "name3", "email3@mail"));
-        request1 = itemRequestRepository
+        User user2 = userRepository.save(new User(2L, "name2", "email2@mail"));
+        User user3 = userRepository.save(new User(3L, "name3", "email3@mail"));
+        ItemRequest request1 = itemRequestRepository
                 .save(new ItemRequest(1L, "requestDescription", user3, LocalDateTime.now()));
         request2 = itemRequestRepository
                 .save(new ItemRequest(2L, "requestDescriptionNew", user3, LocalDateTime.now()));
@@ -62,13 +57,13 @@ class ItemRepositoryTest {
 
     @Test
     void getItemByIdTest() {
-        final Optional<Item> itemById = itemRepository.findById(item1.getId());
-        assertEquals(item1.getId(), itemById.get().getId());
-        assertEquals(item1.getName(), itemById.get().getName());
-        assertEquals(item1.getDescription(), itemById.get().getDescription());
-        assertEquals(item1.getAvailable(), itemById.get().getAvailable());
-        assertEquals(item1.getOwner(), itemById.get().getOwner());
-        assertEquals(item1.getRequest(), itemById.get().getRequest());
+        final Item itemById = itemRepository.getItemById(item1.getId());
+        assertEquals(item1.getId(), itemById.getId());
+        assertEquals(item1.getName(), itemById.getName());
+        assertEquals(item1.getDescription(), itemById.getDescription());
+        assertEquals(item1.getAvailable(), itemById.getAvailable());
+        assertEquals(item1.getOwner(), itemById.getOwner());
+        assertEquals(item1.getRequest(), itemById.getRequest());
     }
 
     @Test
@@ -105,15 +100,5 @@ class ItemRepositoryTest {
         assertEquals(item3.getAvailable(), itemList.get(0).getAvailable());
         assertEquals(item3.getOwner(), itemList.get(0).getOwner());
         assertEquals(item3.getRequest(), itemList.get(0).getRequest());
-    }
-
-    @Test
-    void getItemById() {
-        final Item item = itemRepository.getItemById(item1.getId());
-        assertEquals(item1.getId(), item.getId());
-        assertEquals(item1.getDescription(), item.getDescription());
-        assertEquals(item1.getAvailable(), item.getAvailable());
-        assertEquals(item1.getOwner(), item.getOwner());
-        assertEquals(item1.getRequest(), item.getRequest());
     }
 }

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.bookingTest;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,41 +23,31 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class BookingRepositoryTest {
-    @Autowired
-    BookingRepository bookingRepository;
-    @Autowired
-    ItemRepository itemRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ItemRequestRepository itemRequestRepository;
-    Item item1;
-    Item item2;
-    Item item3;
-    User user1;
-    User user2;
-    User user3;
-    ItemRequest request1;
-    ItemRequest request2;
-    Booking booking1;
-    Booking booking2;
+    private final BookingRepository bookingRepository;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
+    private Item item1;
+    private Item item2;
+    private User user1;
+    private User user2;
+    private User user3;
+    private Booking booking1;
+    private Booking booking2;
 
     @BeforeEach
     void init() {
         user1 = userRepository.save(new User(1L, "name1", "email1@mail"));
         user2 = userRepository.save(new User(2L, "name2", "email2@mail"));
         user3 = userRepository.save(new User(3L, "name3", "email3@mail"));
-        request1 = itemRequestRepository.save(new ItemRequest(1L, "requestDescription", user3,
-                LocalDateTime.now()));
-        request2 = itemRequestRepository.save(new ItemRequest(2L, "requestDescriptionNew", user3,
+        ItemRequest request1 = itemRequestRepository.save(new ItemRequest(1L, "requestDescription", user3,
                 LocalDateTime.now()));
         item1 = itemRepository.save(new Item(1L, "username1", "description1", false,
                 user1, request1));
         item2 = itemRepository.save(new Item(2L, "username2", "description2", true,
                 user2, request1));
-        item3 = itemRepository.save(new Item(3L, "username3", "description3", true,
-                user2, request2));
         booking1 = bookingRepository.save(new Booking(1L, LocalDateTime.now().minusDays(1),
                 LocalDateTime.now().plusDays(2), item1, user3, Status.WAITING));
         booking2 = bookingRepository.save(new Booking(2L, LocalDateTime.now().minusDays(3),
