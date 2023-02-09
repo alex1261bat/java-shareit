@@ -6,8 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 @Controller
 @RequestMapping(path = "/bookings")
@@ -36,23 +34,23 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Object> getAllUserBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                     @RequestParam(name = "stringState",
-                                                                   defaultValue = "all") String stringState,
-                                                     @Valid @PositiveOrZero @RequestParam(name = "from",
-                                                                                   defaultValue = "0") Integer from,
-                                                     @Valid @Positive @RequestParam(name = "size",
-                                                                             defaultValue = "10") Integer size) {
-        return bookingClient.getAllUserBookings(userId, State.getState(stringState), from, size);
+                                                     @RequestParam(name = "state",
+                                                                   defaultValue = "ALL") String state,
+                                                     @RequestParam(name = "from",
+                                                                   defaultValue = "0") Integer from,
+                                                     @RequestParam(name = "size",
+                                                                   defaultValue = "10") Integer size) {
+        return bookingClient.getAllUserBookings(userId, State.getState(state), from, size);
     }
 
     @GetMapping("/owner")
     public ResponseEntity<Object> getAllUserItemsBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                           @RequestParam(name = "state",
-                                                                        defaultValue = "ALL") String stringState,
-                                                          @Valid @PositiveOrZero @RequestParam(name = "from",
-                                                                                       defaultValue = "0") Integer from,
-                                                          @Valid @Positive @RequestParam(name = "size",
-                                                                                    defaultValue = "10") Integer size) {
-        return bookingClient.getAllUserItemsBookings(userId, State.getState(stringState), from, size);
+                                                                        defaultValue = "ALL") String state,
+                                                          @RequestParam(name = "from",
+                                                                        defaultValue = "0") Integer from,
+                                                          @RequestParam(name = "size",
+                                                                        defaultValue = "10") Integer size) {
+        return bookingClient.getAllUserItemsBookings(userId, State.getState(state), from, size);
     }
 }

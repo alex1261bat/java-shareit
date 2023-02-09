@@ -87,7 +87,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingResponseDto> getAllUserBookings(Long userId, String bookingState, Pageable pageRequest) {
         userRepository.getUserById(userId);
-        State state = validateState(bookingState);
+        State state = State.valueOf(bookingState);
 
         switch (state) {
             case CURRENT:
@@ -119,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingResponseDto> getAllUserItemsBookings(Long userId, String bookingState, Pageable pageRequest) {
         userRepository.getUserById(userId);
-        State state = validateState(bookingState);
+        State state = State.valueOf(bookingState);
 
         switch (state) {
             case CURRENT:
@@ -144,14 +144,6 @@ public class BookingServiceImpl implements BookingService {
             default:
                 return bookingRepository.findAllItemOwnerBookings(userId, pageRequest).stream()
                         .map(BookingMapper::toBookingResponseDto).collect(Collectors.toList());
-        }
-    }
-
-    private State validateState(String state) {
-        try {
-            return State.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new ValidationException("Unknown state: " + state);
         }
     }
 }

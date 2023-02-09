@@ -377,18 +377,4 @@ class BookingServiceImplTest {
                 bookingService.getAllUserBookings(user.getId(), "ALL", Pageable.unpaged()));
         assertEquals("Пользователь с id=" + user.getId() + " не существует", e.getMessage());
     }
-
-    @Test
-    void getBookingListWrongStateTest() {
-        ValidationException e = assertThrows(ValidationException.class, () ->
-                bookingService.getAllUserBookings(user.getId(), "WRONGSTATE", Pageable.unpaged()));
-        assertEquals("Unknown state: WRONGSTATE", e.getMessage());
-    }
-
-    @Test
-    void getOwnerBookingListWrongStateTest() {
-        ValidationException e = assertThrows(ValidationException.class, () ->
-                bookingService.getAllUserItemsBookings(user.getId(), "WRONGSTATE", Pageable.unpaged()));
-        assertEquals("Unknown state: WRONGSTATE", e.getMessage());
-    }
 }

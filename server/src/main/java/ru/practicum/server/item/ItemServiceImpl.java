@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.reverse;
+
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -75,8 +77,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemWithBookingDatesDto> getUserItems(Long userId, Pageable pageRequest) {
-        return itemRepository.findAllByOwnerId(userId, pageRequest).stream()
+        List<ItemWithBookingDatesDto> items = itemRepository.findAllByOwnerId(userId, pageRequest).stream()
                 .map(item -> convertToItemWithBookingDatesDto(item, userId)).collect(Collectors.toList());
+
+        reverse(items);
+
+        return items;
     }
 
     @Override
@@ -93,13 +99,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentResponseDto addComment(Long userId, Long itemId, CommentRequestDto commentRequestDto) {
+        commentRequestDto.setCreated(LocalDateTime.now());
+        commentRequestDto.setItemId(itemId);
+        commentRequestDto.setAuthorId(userId);
+
         User author = userRepository.getUserById(userId);
         Item item = itemRepository.getItemById(itemId);
         List<Booking> bookingList = bookingRepository.findAllUserBookings(commentRequestDto.getAuthorId(),
                 commentRequestDto.getItemId(), commentRequestDto.getCreated());
 
         if (bookingList.isEmpty()) {
-            throw new ValidationException("Пользователь с id=" + userId + " не брал вещи в аренду");
+            throw new ValidationException("Пользователь с id=" + userId + " не брал вещь с id=" + itemId + " в аренду");
         }
 
         Comment comment = commentRepository.save(CommentMapper.toComment(commentRequestDto, item, author));
@@ -107,20 +117,20 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.toCommentResponseDto(comment);
     }
 
-    private ItemWithBookingDatesDto convertToItemWithBookingDatesDto(Item item, long userId) {
+    private ItemWithBookingDatesDto convertToItemWithBookingDatesDto(Item item, Long userId) {
         List<Booking> bookingList = bookingRepository.findAllByItemId(item.getId());
         List<CommentResponseDto> commentList = commentRepository.findAllByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentResponseDto).collect(Collectors.toList());
         LocalDateTime now = LocalDateTime.now();
-        Booking current = null;
+        Booking last = null;
         Booking next = null;
 
-        if (item.getOwner().getId() == userId) {
+        if (item.getOwner().getId().equals(userId)) {
             for (Booking booking : bookingList) {
                 if (booking.getStart().isBefore(now)) {
-                    if ((current == null) || (current.getStart().isBefore(booking.getStart())))
-                        current = booking;
-                    continue;
+                    if ((last == null) || (last.getStart().isBefore(booking.getStart()))) {
+                        last = booking;
+                    }
                 }
 
                 if (booking.getStart().isAfter(now)) {
@@ -130,6 +140,6 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
         }
-        return ItemMapper.toItemDtoWithBookingDates(item, current, next, commentList);
+        return ItemMapper.toItemDtoWithBookingDates(item, last, next, commentList);
     }
 }

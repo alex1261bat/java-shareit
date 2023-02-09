@@ -243,7 +243,7 @@ class ItemServiceImplTest {
         when(userRepository.findById(any())).thenReturn(Optional.empty());
         ValidationException e = assertThrows(ValidationException.class, () ->
                 itemService.addComment(3L, 2L, commentDto));
-        assertEquals("Пользователь с id=3 не брал вещи в аренду", e.getMessage());
+        assertEquals("Пользователь с id=3 не брал вещь с id=2 в аренду", e.getMessage());
     }
 
     @Test
@@ -258,7 +258,7 @@ class ItemServiceImplTest {
         when(itemRepository.findById(any())).thenReturn(Optional.empty());
         ValidationException e = assertThrows(ValidationException.class, () ->
                 itemService.addComment(user.getId(), 3L, commentDto));
-        assertEquals("Пользователь с id=" + user.getId() + " не брал вещи в аренду", e.getMessage());
+        assertEquals("Пользователь с id=" + user.getId() + " не брал вещь с id=3 в аренду", e.getMessage());
     }
 
     @Test
@@ -275,6 +275,6 @@ class ItemServiceImplTest {
 
         ValidationException e = assertThrows(ValidationException.class, () ->
                 itemService.addComment(3L, 1L, commentDto));
-        assertEquals("Пользователь с id=" + 3L + " не брал вещи в аренду", e.getMessage());
+        assertEquals("Пользователь с id=" + 3L + " не брал вещь с id=1 в аренду", e.getMessage());
     }
 }

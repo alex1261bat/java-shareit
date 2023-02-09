@@ -5,8 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping("/items")
@@ -22,7 +20,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                             @Valid @RequestBody ItemDto itemDto,
+                                             @RequestBody ItemDto itemDto,
                                              @PathVariable Long itemId) {
         return itemClient.updateItem(itemDto, itemId, userId);
     }
@@ -33,21 +31,21 @@ public class ItemController {
         return itemClient.getItemById(itemId, userId);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<Object> getAllUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                  @Valid @PositiveOrZero @RequestParam(name = "from",
-                                                                                       defaultValue = "0") Integer from,
-                                                  @Valid @Positive @RequestParam(name = "size",
-                                                                                 defaultValue = "10") Integer size) {
+                                                  @RequestParam(name = "from",
+                                                                defaultValue = "0") Integer from,
+                                                  @RequestParam(name = "size",
+                                                                defaultValue = "10") Integer size) {
         return itemClient.getAllUserItems(userId, from, size);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> findAvailableItems(@RequestParam(name = "text") String text,
-                                                     @Valid @PositiveOrZero @RequestParam(name = "from",
-                                                                                       defaultValue = "0") Integer from,
-                                                     @Valid @Positive @RequestParam(name = "size",
-                                                                                    defaultValue = "10") Integer size) {
+    public ResponseEntity<Object> findAvailableItems(@RequestParam String text,
+                                                     @RequestParam(name = "from",
+                                                                   defaultValue = "0") Integer from,
+                                                     @RequestParam(name = "size",
+                                                                   defaultValue = "10") Integer size) {
         return itemClient.findAvailableItems(text.toLowerCase(),from, size);
     }
 

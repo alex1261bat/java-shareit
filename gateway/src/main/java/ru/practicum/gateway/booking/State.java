@@ -1,5 +1,7 @@
 package ru.practicum.gateway.booking;
 
+import ru.practicum.gateway.exceptions.ValidationException;
+
 public enum State {
     ALL,
     CURRENT,
@@ -8,17 +10,11 @@ public enum State {
     REJECTED,
     WAITING;
 
-    public static State getState(String stringState) {
-        State state = null;
-
-        for (State stateElem : values()) {
-            if (stateElem.name().equalsIgnoreCase(stringState)) {
-                state = stateElem;
-            } else {
-                throw new IllegalArgumentException("Unknown state: " + stringState);
-            }
+    public static State getState(String state) {
+        try {
+            return State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Unknown state: " + state);
         }
-
-        return state;
     }
 }

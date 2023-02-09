@@ -10,6 +10,7 @@ import ru.practicum.server.item.ItemRepository;
 import ru.practicum.server.user.User;
 import ru.practicum.server.user.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto saveNewItemRequest(Long userId, ItemRequestDto itemRequestDto) {
+        itemRequestDto.setRequestorId(userId);
+        itemRequestDto.setCreated(LocalDateTime.now());
+
         User requestor = userRepository.getUserById(userId);
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, requestor);
 

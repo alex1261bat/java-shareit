@@ -8,6 +8,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.gateway.client.BaseClient;
+import ru.practicum.gateway.pageValidator.PageValidator;
 
 import java.util.Map;
 
@@ -38,6 +39,8 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllUserBookings(Long userId, State state, Integer from, Integer size) {
+        PageValidator.validatePage(from, size);
+
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "getState", from,
@@ -48,6 +51,8 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllUserItemsBookings(Long userId, State state, Integer from, Integer size) {
+        PageValidator.validatePage(from, size);
+
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "getState", from,

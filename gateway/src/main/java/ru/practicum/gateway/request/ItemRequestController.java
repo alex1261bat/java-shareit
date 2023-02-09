@@ -5,8 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping(path = "/requests")
@@ -28,10 +26,10 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @Valid @PositiveOrZero @RequestParam(name = "from",
-                                                                              defaultValue = "0") Integer from,
-                                         @Valid @Positive @RequestParam(name = "size",
-                                                                        defaultValue = "10") Integer size) {
+                                         @RequestParam(name = "from",
+                                                       defaultValue = "0") Integer from,
+                                         @RequestParam(name = "size",
+                                                       defaultValue = "10") Integer size) {
         return itemRequestClient.getAll(userId, from, size);
     }
 

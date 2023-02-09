@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 public class PageCreator {
 
     public static PageRequest createPage(Integer from, Integer size) {
-        return PageRequest.of(from / size, size);
+        int page = from / size;
+        return PageRequest.of(page, size);
     }
 }

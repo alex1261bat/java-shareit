@@ -33,8 +33,10 @@ public class ItemController {
 
     @GetMapping
     public List<ItemWithBookingDatesDto> getAllUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                         @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                         @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                         @RequestParam(name = "from",
+                                                                       defaultValue = "0") Integer from,
+                                                         @RequestParam(name = "size",
+                                                                       defaultValue = "10") Integer size) {
         return itemService.getUserItems(userId, PageCreator.createPage(from, size));
     }
 
