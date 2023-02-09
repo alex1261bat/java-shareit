@@ -42,10 +42,10 @@ public class ItemRequestClient extends BaseClient {
         PageValidator.validatePage(from, size);
 
         Map<String, Object> parameters = Map.of(
-                "getState", from,
+                "from", from,
                 "size", size
         );
-        return get("/all?getState={getState}&size={size}", userId, parameters);
+        return get("/all?from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> getRequestById(Long requestId, Long userId) {

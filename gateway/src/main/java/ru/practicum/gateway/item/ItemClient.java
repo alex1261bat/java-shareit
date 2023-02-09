@@ -43,10 +43,10 @@ public class ItemClient extends BaseClient {
         PageValidator.validatePage(from, size);
 
         Map<String, Object> parameters = Map.of(
-                "getState", from,
+                "from", from,
                 "size", size
         );
-        return get("?getState={getState}&size={size}", userId, parameters);
+        return get("?from={from}&size={size}", userId, parameters);
     }
 
     public ResponseEntity<Object> findAvailableItems(String text, Integer from, Integer size) {
@@ -54,10 +54,10 @@ public class ItemClient extends BaseClient {
 
         Map<String, Object> parameters = Map.of(
                 "text", text,
-                "getState", from,
+                "from", from,
                 "size", size
         );
-        return get("/search?text={text}&getState={getState}&size={size}", null, parameters);
+        return get("/search?text={text}&from={from}&size={size}", null, parameters);
     }
 
     public ResponseEntity<Object> addComment(CommentRequestDto commentRequestDto, Long userId, Long itemId) {
