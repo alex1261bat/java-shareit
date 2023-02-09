@@ -15,7 +15,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> saveNewBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @Valid @RequestBody BookItemRequestDto requestDto) {
+                                                 @Valid @RequestBody BookingRequestDto requestDto) {
         return bookingClient.saveNewBooking(userId, requestDto);
     }
 

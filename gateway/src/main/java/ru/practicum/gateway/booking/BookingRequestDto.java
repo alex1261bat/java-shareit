@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookItemRequestDto {
+public class BookingRequestDto {
     private Long id;
     @FutureOrPresent
     private LocalDateTime start;
