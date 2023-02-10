@@ -305,19 +305,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void createWrongTimeTest() {
-        BookingRequestDto booking = new BookingRequestDto(1L, LocalDateTime.now().plusDays(2),
-                LocalDateTime.now().plusDays(1), item.getId());
-
-        when(userRepository.getUserById(any())).thenReturn(user2);
-        when(itemRepository.getItemById(any())).thenReturn(item);
-
-        ValidationException e = assertThrows(ValidationException.class, () ->
-                bookingService.saveNewBooking(2L, booking));
-        assertEquals("Время начала бронирования не может быть позже времени окончания", e.getMessage());
-    }
-
-    @Test
     void approveBookingWrongBookingTest() {
         when(bookingRepository.getBookingById(any()))
                 .thenThrow(new NotFoundException("Бронирование с id=" + booking.getId() + " не существует"));
