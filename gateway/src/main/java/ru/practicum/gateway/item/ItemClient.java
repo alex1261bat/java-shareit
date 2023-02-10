@@ -8,7 +8,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.gateway.client.BaseClient;
-import ru.practicum.gateway.pageValidator.PageValidator;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -40,8 +39,6 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllUserItems(Long userId, Integer from, Integer size) {
-        PageValidator.validatePage(from, size);
-
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -50,8 +47,6 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> findAvailableItems(String text, Integer from, Integer size) {
-        PageValidator.validatePage(from, size);
-
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,

@@ -34,10 +34,6 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Вещь недоступна для бронирования");
         }
 
-        if (bookingRequestDto.getStart().isAfter(bookingRequestDto.getEnd())) {
-            throw new ValidationException("Время начала бронирования не может быть позже времени окончания");
-        }
-
         Booking booking = BookingMapper.toBooking(bookingRequestDto, booker, item, Status.WAITING);
 
         return BookingMapper.toBookingResponseDto(bookingRepository.save(booking));

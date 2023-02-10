@@ -8,7 +8,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.gateway.client.BaseClient;
-import ru.practicum.gateway.pageValidator.PageValidator;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -39,8 +38,6 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAll(Long userId, Integer from, Integer size) {
-        PageValidator.validatePage(from, size);
-
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
